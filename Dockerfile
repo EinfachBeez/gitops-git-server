@@ -1,6 +1,6 @@
 ## Standard phusion part
-FROM phusion/baseimage:latest
-ENV HOME /root
+FROM phusion/baseimage:noble-1.0.2
+ENV HOME=/root
 RUN /etc/my_init.d/00_regen_ssh_host_keys.sh -f && rm -f /etc/service/sshd/down  # Uncomment to Enable SSHD
 #RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh           # Uncomment to Disable SSHD
 CMD ["/sbin/my_init"]
@@ -9,10 +9,10 @@ CMD ["/sbin/my_init"]
 EXPOSE 22
 
 ## Application specific part
-MAINTAINER Stephen Day <sd@unixtastic.com>
+LABEL org.opencontainers.image.authors="einfafachbeez@t-online.de"
 WORKDIR /tmp
 RUN apt-get -qq update && apt-get -qq upgrade
-RUN apt-get -qq install git-sh git sharutils
+RUN apt-get -qq install git sharutils
 
 ## Setup service
 # Setup a git user and SSH
@@ -30,3 +30,7 @@ RUN ln -fs /dev/null /run/motd.dynamic
 WORKDIR /
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+VOLUME /git/gitops
+
+ADD gitstart.sh /etc/my_init.d/01_gitstart.sh
+RUN chmod +x /etc/my_init.d/01_gitstart.sh
